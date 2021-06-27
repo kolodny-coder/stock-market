@@ -77,7 +77,7 @@ def user_page(user_name):
         if not look_for_match:
             db.session.add(bid)
             db.session.commit()
-            return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+            return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
         # we have a deal !!!! exchange shares
         if look_for_match:
@@ -106,7 +106,7 @@ def user_page(user_name):
     if sales_bid_form.validate_on_submit():
         if sales_bid_form.sell_shares_amount.data >= user.number_of_shares:
             flash("insufficient number of shares", 'error')
-            return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+            return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
         # Save the bid to the memory
         bid = TradeBids(bid_type='sell', price_per_share=sales_bid_form.sell_asking_price.data,
@@ -126,7 +126,7 @@ def user_page(user_name):
         if not look_for_match:
             db.session.add(bid)
             db.session.commit()
-            return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+            return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
         # We have a deal !!!! exchange shares
         if look_for_match:
@@ -152,7 +152,7 @@ def user_page(user_name):
 
             db.session.commit()
 
-    return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+    return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
 
 @app.route('/users_and_bids_tables')
@@ -169,7 +169,7 @@ def index():
 
 @app.route('/get_values')
 def get_values():
-    pass
+    return None
     # user_name = session.get('name', None)
     # a = Users.query.filter_by(user_name=user_name).first()
     # user_number_of_shaers = a.number_of_shares

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>User Page</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-    <script type="text/javascript" charset="utf-8">
-        var socket = io();
-        socket.on('connect', function() {
-            socket.emit('my event', {data: 'I\'m connected!'});
-        });
-    </script>
+<style>
+
+.container {
+border-radius: 5px;
+background-color: #f2f2f2;
+padding: 20px;
+}
+</style>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -23,6 +24,7 @@
 
 </head>
 <body>
+<div class="container">
         <ul>
             ID:  {{ user.id }}
         </ul>
@@ -34,17 +36,20 @@
         </ul>
 
     <form action="/user_page/{{user.user_name}}" method="POST">
+        <h2>Sell Quotes</h2>
         {{ sell_form.hidden_tag() }}
-        {{ sell_form.sell_asking_price }}
-        {{ sell_form.sell_shares_amount }}
+        Price{{ sell_form.sell_asking_price(class="quote__field", style="margin: 10px") }}
+        Shares amount{{ sell_form.sell_shares_amount(class="quote__field", style="margin: 10px") }}
         {{ sell_form.submit_sale_offer }}
     </form>
 
      <form action="" method="POST">
+         <h2>Buy Quotes</h2>
         {{ buy_form.hidden_tag() }}
-        {{ buy_form.buy_asking_price }}
-        {{ buy_form.buy_shares_amount }}
-        {{ buy_form.submit_buy_offer }}
+        Price{{ buy_form.buy_asking_price(class="quote__field", style="margin: 10px") }}
+        Shares amount{{ buy_form.buy_shares_amount(class="quote__field", style="margin: 10px") }}
+        {{ buy_form.submit_buy_offer(class="quote__field") }}
     </form>
+</div>
 </body>
 </html>
