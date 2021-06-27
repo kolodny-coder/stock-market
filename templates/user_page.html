@@ -1,0 +1,28 @@
+{% extends 'index.html' %}
+{% block content %}
+        <ul>
+            ID:  {{ user.id }}
+        </ul>
+        <ul>
+            USER NAME:  {{ user.user_name }}
+        </ul>
+        <ul>
+            NUMBER OF SHARES:  {{ user.number_of_shares }}
+        </ul>
+
+        <span id=result>?</span>
+
+    <form action="/user_page/{{user.user_name}}" method="POST">
+        {{ sell_form.hidden_tag() }}
+        {{ sell_form.sell_asking_price }}
+        {{ sell_form.sell_shares_amount }}
+        {{ sell_form.submit_sale_offer }}
+    </form>
+
+     <form action="" method="POST">
+        {{ buy_form.hidden_tag() }}
+        {{ buy_form.buy_asking_price }}
+        {{ buy_form.buy_shares_amount }}
+        {{ buy_form.submit_buy_offer }}
+    </form>
+{% endblock content %}

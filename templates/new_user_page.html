@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io();
+        socket.on('connect', function() {
+            socket.emit('my event', {data: 'I\'m connected!'});
+        });
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class=flashes>
+         {% for message in messages %}
+            <li>{{ message }}</li>
+         {% endfor %}
+          </ul>
+        {% endif %}
+    {% endwith %}
+
+</head>
+<body>
+        <ul>
+            ID:  {{ user.id }}
+        </ul>
+        <ul>
+            USER NAME:  {{ user.user_name }}
+        </ul>
+        <ul>
+            NUMBER OF SHARES:  {{ user.number_of_shares }}
+        </ul>
+
+    <form action="/user_page/{{user.user_name}}" method="POST">
+        {{ sell_form.hidden_tag() }}
+        {{ sell_form.sell_asking_price }}
+        {{ sell_form.sell_shares_amount }}
+        {{ sell_form.submit_sale_offer }}
+    </form>
+
+     <form action="" method="POST">
+        {{ buy_form.hidden_tag() }}
+        {{ buy_form.buy_asking_price }}
+        {{ buy_form.buy_shares_amount }}
+        {{ buy_form.submit_buy_offer }}
+    </form>
+</body>
+</html>
