@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Registration / Login</title>
     <link rel="stylesheet" href="/static/styles.css"/>
-    <style>
+<style>
 body {font-family: Arial, Helvetica, sans-serif;}
 
 input[type=submit]:hover {
@@ -20,11 +20,11 @@ input[type=submit]:hover {
 </head>
 </body>
 
-<h3>Registration / Login </h3>
+<h3> Login </h3>
 <div class="container">
     <form action="/register" method="POST">
         {{ form.hidden_tag() }}
-        {{ form.user_name(class_="input__field") }}
+    {{ form.user_name(class_="input__field") }}
         {{ form.submit (class_="submit__field")}}
     </form>
 </div>

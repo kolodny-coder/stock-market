@@ -46,22 +46,18 @@ def register():
         db.session.add(player)
         db.session.commit()
         return redirect(url_for('user_page', user_name=user_name))
-    return render_template('new_register.html', form=register_form)
+    return render_template('register.html', form=register_form)
 
 
 @app.route('/user_page/<user_name>', methods=['GET', 'POST'])
 def user_page(user_name):
-    session.clear()
-    for key in list(session.keys()):
-        session.pop(key)
     user = Users.query.filter_by(user_name=user_name).first()
     # session['name'] = 'my_value'
-    session['name'] = user.user_name
+    # session['name'] = user.user_name
     # session.pop('name', None)
     # session['user'] = user
     sales_bid_form = SalesBids()
     buy_bids_form = BuyBids()
-
     if buy_bids_form.validate_on_submit():
         # Save the bid on memory
         bid = TradeBids(bid_type='buy', price_per_share=buy_bids_form.buy_asking_price.data,
@@ -173,11 +169,12 @@ def index():
 
 @app.route('/get_values')
 def get_values():
-    user_name = session.get('name', None)
-    a = Users.query.filter_by(user_name=user_name).first()
-    user_number_of_shaers = a.number_of_shares
-
-    return jsonify(result=user_number_of_shaers)
+    pass
+    # user_name = session.get('name', None)
+    # a = Users.query.filter_by(user_name=user_name).first()
+    # user_number_of_shaers = a.number_of_shares
+    #
+    return jsonify(result='hi')
 
 
 @app.route('/get_monty')
