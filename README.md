@@ -18,7 +18,7 @@ First, you'll have to register or log in:
 Go to ` http://127.0.0.1:5000/` and enter a user name, 
 If the User exists, he will be redirected to his user page. If the User doesn't exist, it will create a new user and turn to his user page.
 
-### initial user 
+### Initial user 
 admin_1 User holds the initial amount of 1000 shares, consider the first login with admin_1 User and offer some shares for sale.
 
 For trading in stocks, the assumption is that a user has an infinite amount of funds.
