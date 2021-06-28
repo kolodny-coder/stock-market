@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from forms import RegisterPlayers, SalesBids, BuyBids
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'password'
@@ -38,8 +39,8 @@ def register():
     if register_form.validate_on_submit():
         player = Users(user_name=register_form.user_name.data)
         user_name = player.user_name
-        all = Users.query.all()
-        for name in all:
+        all_users = Users.query.all()
+        for name in all_users:
             if player.user_name in name.user_name:
                 return redirect(url_for('user_page', user_name=user_name))
         player.number_of_shares = 0
@@ -52,10 +53,7 @@ def register():
 @app.route('/user_page/<user_name>', methods=['GET', 'POST'])
 def user_page(user_name):
     user = Users.query.filter_by(user_name=user_name).first()
-    # session['name'] = 'my_value'
     session['name'] = user_name
-    # session.pop('name', None)
-    # session['user'] = user
     sales_bid_form = SalesBids()
     buy_bids_form = BuyBids()
     if buy_bids_form.validate_on_submit():
@@ -104,7 +102,18 @@ def user_page(user_name):
             db.session.commit()
 
     if sales_bid_form.validate_on_submit():
-        if sales_bid_form.sell_shares_amount.data >= user.number_of_shares:
+        # Calculating hom many shares did the user already offer for sale.
+        result = TradeBids.query.with_entities(
+            func.sum(TradeBids.share_amount).label("sum_shares_bid_for_sale")
+        ).filter(
+            TradeBids.trader_name == user.user_name,
+            TradeBids.bid_type == 'sell',
+            TradeBids.bid_status == 'pending'
+        ).first()
+        total_user_shares_standing_for_sale = (result.sum_shares_bid_for_sale)
+
+        # Validate that the user did not offer shares that he does not have for sale.
+        if sales_bid_form.sell_shares_amount.data > user.number_of_shares - total_user_shares_standing_for_sale:
             flash("insufficient number of shares", 'error')
             return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
@@ -155,27 +164,10 @@ def user_page(user_name):
     return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
 
-@app.route('/users_and_bids_tables')
-def users_and_bids_tables():
-    users = Users.query.all()
-    bids = TradeBids.query.all()
-    return render_template('all.html', users=users, bids=bids)
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
 @app.route('/_get_values')
 def get_values():
-    mk = session.get('name', None)
-    print(mk)
-    print(dir(Users))
-
-    peter = Users.query.filter_by(user_name=mk).first()
-    print(peter)
-    # user_number_of_shaers = a.number_of_shares
+    user_name = session.get('name', None)
+    peter = Users.query.filter_by(user_name=user_name).first()
     return jsonify(result=peter.number_of_shares)
 
 
