@@ -113,6 +113,8 @@ def user_page(user_name):
         total_user_shares_standing_for_sale = result.sum_shares_bid_for_sale
 
         # Validate that the user did not offer shares that he does not have for sale.
+        if not total_user_shares_standing_for_sale:
+            total_user_shares_standing_for_sale = 0
         if sales_bid_form.sell_shares_amount.data > user.number_of_shares - total_user_shares_standing_for_sale:
             flash("insufficient number of shares", 'error')
             return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
