@@ -81,8 +81,9 @@ def user_page(user_name):
         # we have a deal !!!! exchange shares
         if look_for_match:
             # Update the seller total share
+            seller = Users.query.filter_by(user_name=look_for_match.trader_name).first()
             Users.query.filter_by(user_name=look_for_match.trader_name).update(
-                dict(number_of_shares=look_for_match.share_amount - bid.share_amount))
+                dict(number_of_shares=seller.number_of_shares - bid.share_amount))
             db.session.commit()
 
             # Update the buyer total share
@@ -95,6 +96,7 @@ def user_page(user_name):
             TradeBids.query.filter_by(id=bid_id_to_update).update(
                 dict(share_amount=look_for_match.share_amount - bid.share_amount))
 
+            # Updating bid status if needed
             if TradeBids.query.filter_by(id=bid_id_to_update).first().share_amount == 0:
                 TradeBids.query.filter_by(id=bid_id_to_update).update(
                     dict(bid_status='expired'))
@@ -102,7 +104,7 @@ def user_page(user_name):
             db.session.commit()
 
     if sales_bid_form.validate_on_submit():
-        # Calculating hom many shares did the user already offer for sale.
+        # Calculating how many shares did the user already offer for sale.
         result = TradeBids.query.with_entities(
             func.sum(TradeBids.share_amount).label("sum_shares_bid_for_sale")
         ).filter(
@@ -115,6 +117,7 @@ def user_page(user_name):
         # Validate that the user did not offer shares that he does not have for sale.
         if not total_user_shares_standing_for_sale:
             total_user_shares_standing_for_sale = 0
+
         if sales_bid_form.sell_shares_amount.data > user.number_of_shares - total_user_shares_standing_for_sale:
             flash("insufficient number of shares", 'error')
             return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
