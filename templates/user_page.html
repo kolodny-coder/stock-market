@@ -1,5 +1,54 @@
-{% extends 'new_index.html' %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Page</title>
+<style>
+
+.container {
+border-radius: 5px;
+background-color: #f2f2f2;
+padding: 20px;
+}
+</style>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson }};
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+<script type=text/javascript>
+    setInterval(                               //Periodically
+      function()
+      {
+         $.getJSON(                            //Get some values from the server
+            $SCRIPT_ROOT + '/_get_values',      // At this URL
+            {},                                // With no extra parameters
+            function(data)                     // And when you get a response
+            {
+              $("#result").text(data.result);  // Write the results into the
+                                               // #result element
+            });
+      },
+  500);                                    // And do it every 500ms
+</script>
+<span id=result>?</span>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class=flashes>
+         {% for message in messages %}
+            <li>{{ message }}</li>
+         {% endfor %}
+          </ul>
+        {% endif %}
+    {% endwith %}
+
+</head>
+<body>
+<div class="container">
+    <span id=result>?</span>
+
         <ul>
             ID:  {{ user.id }}
         </ul>
@@ -10,20 +59,21 @@
             NUMBER OF SHARES:  {{ user.number_of_shares }}
         </ul>
 
-
     <form action="/user_page/{{user.user_name}}" method="POST">
-
+        <h2>Sell Quotes</h2>
         {{ sell_form.hidden_tag() }}
-        {{ sell_form.sell_asking_price }}
-
-        {{ sell_form.sell_shares_amount }}
+        Price{{ sell_form.sell_asking_price(class="quote__field", style="margin: 10px") }}
+        Shares amount{{ sell_form.sell_shares_amount(class="quote__field", style="margin: 10px") }}
         {{ sell_form.submit_sale_offer }}
     </form>
 
      <form action="" method="POST">
+         <h2>Buy Quotes</h2>
         {{ buy_form.hidden_tag() }}
-        {{ buy_form.buy_asking_price }}
-        {{ buy_form.buy_shares_amount}}
-        {{ buy_form.submit_buy_offer}}
-     </form>
-{% endblock content %}
+        Price{{ buy_form.buy_asking_price(class="quote__field", style="margin: 10px") }}
+        Shares amount{{ buy_form.buy_shares_amount(class="quote__field", style="margin: 10px") }}
+        {{ buy_form.submit_buy_offer(class="quote__field") }}
+    </form>
+</div>
+</body>
+</html>

@@ -8,7 +8,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tmp/test.db'
 db = SQLAlchemy(app)
 
 
-
 # Setting players table
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -33,6 +32,7 @@ class TradeBids(db.Model):
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def register():
     register_form = RegisterPlayers()
     if register_form.validate_on_submit():
@@ -53,7 +53,7 @@ def register():
 def user_page(user_name):
     user = Users.query.filter_by(user_name=user_name).first()
     # session['name'] = 'my_value'
-    # session['name'] = user.user_name
+    session['name'] = user_name
     # session.pop('name', None)
     # session['user'] = user
     sales_bid_form = SalesBids()
@@ -77,7 +77,7 @@ def user_page(user_name):
         if not look_for_match:
             db.session.add(bid)
             db.session.commit()
-            return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+            return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
         # we have a deal !!!! exchange shares
         if look_for_match:
@@ -106,7 +106,7 @@ def user_page(user_name):
     if sales_bid_form.validate_on_submit():
         if sales_bid_form.sell_shares_amount.data >= user.number_of_shares:
             flash("insufficient number of shares", 'error')
-            return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+            return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
         # Save the bid to the memory
         bid = TradeBids(bid_type='sell', price_per_share=sales_bid_form.sell_asking_price.data,
@@ -126,7 +126,7 @@ def user_page(user_name):
         if not look_for_match:
             db.session.add(bid)
             db.session.commit()
-            return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+            return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
         # We have a deal !!!! exchange shares
         if look_for_match:
@@ -152,7 +152,7 @@ def user_page(user_name):
 
             db.session.commit()
 
-    return render_template('new_user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
+    return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
 
 @app.route('/users_and_bids_tables')
@@ -167,33 +167,25 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/get_values')
+@app.route('/_get_values')
 def get_values():
-    return None
-    # user_name = session.get('name', None)
-    # a = Users.query.filter_by(user_name=user_name).first()
+    mk = session.get('name', None)
+    print(mk)
+    print(dir(Users))
+
+    peter = Users.query.filter_by(user_name=mk).first()
+    print(peter)
     # user_number_of_shaers = a.number_of_shares
-    #
-    return jsonify(result='hi')
+    return jsonify(result=peter.number_of_shares)
 
 
-@app.route('/get_monty')
-def get_monty():
-    a = session.get('my_var', None)
-    # a = Users.query.filter_by(user_name=user).first()
-    # user_number_of_shaers = a.number_of_shares
-    print(a)
-
-    return jsonify(result=a)
-
-
-@app.route('/table')
-def table():
+@app.route('/admin_dashboard')
+def admin_dashboard():
     headings = ('Id', 'User Name', 'Bid Type', 'Price Per Share' 'Share Amount', 'Bid Status')
     data = TradeBids.query.all()
     users_headings = ('Id', 'User Name', 'Number Of Shares')
     users_data = Users.query.all()
-    return render_template('table.html', headings=headings, data=data, users_headings=users_headings,
+    return render_template('admin_dashboard.html', headings=headings, data=data, users_headings=users_headings,
                            users_data=users_data)
 
 
