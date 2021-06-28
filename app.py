@@ -80,7 +80,6 @@ def user_page(user_name):
 
         # we have a deal !!!! exchange shares
         if look_for_match:
-            diff = bid.share_amount
             # Update the seller total share
             Users.query.filter_by(user_name=look_for_match.trader_name).update(
                 dict(number_of_shares=look_for_match.share_amount - bid.share_amount))
@@ -111,7 +110,7 @@ def user_page(user_name):
             TradeBids.bid_type == 'sell',
             TradeBids.bid_status == 'pending'
         ).first()
-        total_user_shares_standing_for_sale = (result.sum_shares_bid_for_sale)
+        total_user_shares_standing_for_sale = result.sum_shares_bid_for_sale
 
         # Validate that the user did not offer shares that he does not have for sale.
         if sales_bid_form.sell_shares_amount.data > user.number_of_shares - total_user_shares_standing_for_sale:
