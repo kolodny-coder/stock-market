@@ -164,6 +164,7 @@ def user_page(user_name):
     return render_template('user_page.html', user=user, sell_form=sales_bid_form, buy_form=buy_bids_form)
 
 
+# This route is used to keep the user number of shares persistent.
 @app.route('/_get_values')
 def get_values():
     user_name = session.get('name', None)
@@ -173,7 +174,7 @@ def get_values():
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    headings = ('Id', 'User Name', 'Bid Type', 'Price Per Share' 'Share Amount', 'Bid Status')
+    headings = ('Id', 'User Name', 'Bid Type', 'Price Per Share', 'Share Amount', 'Bid Status')
     data = TradeBids.query.all()
     users_headings = ('Id', 'User Name', 'Number Of Shares')
     users_data = Users.query.all()
